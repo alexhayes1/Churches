@@ -633,6 +633,7 @@ html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family:
     record.notes = byId("fNotes").value;
     record.lat = pendingLatLng.lat;
     record.lng = pendingLatLng.lng;
+    record.photos = formPhotos.slice();
     record.updated = new Date().toISOString();
 
     var savedId = record.id;
@@ -707,6 +708,16 @@ html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family:
       if (c) { openForm(c); }
     });
     byId("title").addEventListener("click", fitAll);
+    byId("photoBtn").addEventListener("click", function () {
+      if (formPhotos.length >= MAX_PHOTOS) {
+        showToast("Maximum of " + MAX_PHOTOS + " photos per church.");
+        return;
+      }
+      byId("fPhotos").click();
+    });
+    byId("fPhotos").addEventListener("change", handlePhotoChoice);
+    byId("viewer").addEventListener("click", closeViewer);
+    byId("viewerClose").addEventListener("click", closeViewer);
   }
 
   function start() {
