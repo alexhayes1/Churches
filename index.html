@@ -33,20 +33,24 @@ html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family:
 #list { height: calc(100% - 28px); overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 0 12px calc(env(safe-area-inset-bottom) + 24px) 12px; }
 
 .item { display: flex; align-items: center; padding: 10px 6px; border-bottom: 1px solid #eee; }
-.thumb { width: 48px; height: 48px; border-radius: 10px; background: #e9efe9; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; margin-right: 12px; }
+.thumb { width: 48px; height: 48px; border-radius: 10px; background: #e9efe9; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; margin-right: 12px; overflow: hidden; }
+.thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .itemname { font-size: 16px; font-weight: 600; }
 .itemsub { font-size: 13px; color: #777; margin-top: 2px; }
 .empty { padding: 18px 6px; color: #666; font-size: 15px; line-height: 1.4; }
 .tools { padding: 18px 0 8px 0; display: flex; gap: 10px; flex-wrap: wrap; }
 .tools button { background: #f0f0f0; border: none; border-radius: 14px; padding: 8px 12px; font-size: 13px; color: #333; }
+.version { width: 100%; font-size: 12px; color: #999; margin-top: 4px; }
 
 .pin-dot { width: 28px; height: 28px; border-radius: 50%; background: #8a1c2b; border: 3px solid #fff; box-shadow: 0 1px 5px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; font-size: 14px; }
 .pin-dot.sel { background: #d9a400; transform: scale(1.25); }
 
-.card { position: fixed; left: 0; right: 0; bottom: 0; z-index: 1300; background: #fff; border-radius: 16px 16px 0 0; box-shadow: 0 -2px 14px rgba(0,0,0,0.3); padding: 18px 18px calc(env(safe-area-inset-bottom) + 18px) 18px; max-height: 70%; overflow-y: auto; }
+.card { position: fixed; left: 0; right: 0; bottom: 0; z-index: 1300; background: #fff; border-radius: 16px 16px 0 0; box-shadow: 0 -2px 14px rgba(0,0,0,0.3); padding: 18px 18px calc(env(safe-area-inset-bottom) + 18px) 18px; max-height: 75%; overflow-y: auto; }
 .card h2 { margin: 0 0 6px 0; font-size: 21px; }
 .card p { margin: 6px 0; font-size: 15px; line-height: 1.4; }
 .card .small { font-size: 12px; color: #888; }
+.strip { display: flex; gap: 8px; overflow-x: auto; margin: 10px 0 6px 0; -webkit-overflow-scrolling: touch; }
+.strip img { height: 130px; border-radius: 8px; flex-shrink: 0; display: block; }
 .btnrow { display: flex; gap: 10px; margin-top: 14px; }
 .btnrow button { flex: 1; border: none; border-radius: 10px; padding: 12px; font-size: 16px; font-weight: 600; background: #eef2ee; color: #2f4a3a; }
 .btnrow button.danger { background: #f6e3e5; color: #8a1c2b; }
@@ -55,14 +59,26 @@ html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family:
 .form { background: #fff; width: 100%; max-height: 92%; overflow-y: auto; border-radius: 16px 16px 0 0; padding: 18px 18px calc(env(safe-area-inset-bottom) + 18px) 18px; }
 .form h2 { margin: 0 0 12px 0; font-size: 20px; }
 .form label { display: block; font-size: 13px; color: #555; margin: 12px 0 4px 0; font-weight: 600; }
-.form input, .form textarea { width: 100%; font-size: 16px; padding: 10px; border: 1px solid #ccc; border-radius: 8px; font-family: inherit; background: #fff; }
+.form input[type="text"], .form input[type="date"], .form textarea { width: 100%; font-size: 16px; padding: 10px; border: 1px solid #ccc; border-radius: 8px; font-family: inherit; background: #fff; }
 .form textarea { min-height: 80px; }
 #locLabel { font-size: 14px; color: #444; margin: 4px 0 8px 0; }
 .locbtns { display: flex; gap: 10px; }
 .locbtns button { flex: 1; border: none; border-radius: 10px; padding: 11px 6px; font-size: 15px; background: #eef2ee; color: #2f4a3a; font-weight: 600; }
 .save { background: #2f4a3a !important; color: #fff !important; }
 
-#toast { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom) + 80px); transform: translateX(-50%); background: rgba(30,30,30,0.92); color: #fff; padding: 10px 16px; border-radius: 18px; font-size: 14px; z-index: 1500; max-width: 85%; text-align: center; }
+.photobtn { width: 100%; border: none; border-radius: 10px; padding: 11px 6px; font-size: 15px; background: #eef2ee; color: #2f4a3a; font-weight: 600; }
+.pgrid { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 8px 0; }
+.pitem { position: relative; width: 76px; height: 76px; border-radius: 10px; overflow: hidden; background: #e9efe9; }
+.pitem img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pitem .x { position: absolute; top: 3px; right: 3px; width: 24px; height: 24px; border-radius: 50%; border: none; background: rgba(0,0,0,0.65); color: #fff; font-size: 14px; line-height: 24px; padding: 0; }
+.pitem .badge { position: absolute; left: 0; right: 0; bottom: 0; background: rgba(47,74,58,0.88); color: #fff; font-size: 11px; text-align: center; padding: 2px 0; }
+.hint { font-size: 12px; color: #777; margin: 6px 0 0 0; }
+
+#viewer { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 1600; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; }
+#viewer img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+#viewerClose { position: absolute; top: calc(env(safe-area-inset-top) + 12px); right: 14px; background: rgba(255,255,255,0.2); color: #fff; border: none; border-radius: 16px; padding: 8px 14px; font-size: 15px; }
+
+#toast { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom) + 80px); transform: translateX(-50%); background: rgba(30,30,30,0.92); color: #fff; padding: 10px 16px; border-radius: 18px; font-size: 14px; z-index: 1700; max-width: 85%; text-align: center; }
 </style>
 </head>
 <body>
@@ -102,6 +118,11 @@ html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family:
     <input id="fDate" type="date">
     <label for="fNotes">Notes</label>
     <textarea id="fNotes" placeholder="Anything you want to remember"></textarea>
+    <label>Photos</label>
+    <div id="pgrid" class="pgrid"></div>
+    <button id="photoBtn" class="photobtn">Add photos</button>
+    <input id="fPhotos" type="file" accept="image/*" multiple class="hidden">
+    <p class="hint">The first photo is the icon. Tap a photo to make it the icon, or tap x to remove it.</p>
     <label>Location</label>
     <div id="locLabel">No location chosen yet</div>
     <div class="locbtns">
@@ -115,6 +136,11 @@ html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family:
   </div>
 </div>
 
+<div id="viewer" class="hidden">
+  <button id="viewerClose">Close</button>
+  <img id="viewerImg" alt="">
+</div>
+
 <div id="toast" class="hidden"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -124,6 +150,9 @@ html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family:
 
   var DB_NAME = "churchTracker";
   var STORE = "churches";
+  var MAX_PHOTOS = 8;
+  var PHOTO_MAX_SIDE = 1000;
+  var ICON_SIZE = 120;
   var db = null;
   var churches = [];
   var markers = {};
@@ -136,6 +165,8 @@ html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family:
   var editingId = null;
   var currentId = null;
   var toastTimer = null;
+  var formPhotos = [];
+  var busy = false;
 
   function byId(id) { return document.getElementById(id); }
 
@@ -159,6 +190,10 @@ html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family:
     var d = new Date(v + "T12:00:00");
     if (isNaN(d.getTime())) { return v; }
     return d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+  }
+
+  function photosOf(c) {
+    return (c && c.photos && c.photos.length) ? c.photos : [];
   }
 
   /* ---------- Storage (IndexedDB) ---------- */
@@ -191,7 +226,7 @@ html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family:
     var store = tx.objectStore(STORE);
     for (var i = 0; i < items.length; i++) { store.put(items[i]); }
     tx.oncomplete = function () { if (cb) { cb(); } };
-    tx.onerror = function () { showToast("Could not save."); };
+    tx.onabort = function () { showToast("Could not save. Storage may be full."); };
   }
 
   function deleteMany(ids, cb) {
@@ -199,7 +234,7 @@ html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family:
     var store = tx.objectStore(STORE);
     for (var i = 0; i < ids.length; i++) { store.delete(ids[i]); }
     tx.oncomplete = function () { if (cb) { cb(); } };
-    tx.onerror = function () { showToast("Could not delete."); };
+    tx.onabort = function () { showToast("Could not delete."); };
   }
 
   function findChurch(id) {
@@ -211,6 +246,128 @@ html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family:
 
   function newId() {
     return "c" + Date.now() + "-" + Math.floor(Math.random() * 100000);
+  }
+
+  /* ---------- Photos ---------- */
+
+  function loadImageFromFile(file, ok, fail) {
+    var url = URL.createObjectURL(file);
+    var img = new Image();
+    img.onload = function () { ok(img, url); };
+    img.onerror = function () { URL.revokeObjectURL(url); fail(); };
+    img.src = url;
+  }
+
+  function drawScaled(img, maxSide, quality) {
+    var w = img.naturalWidth;
+    var h = img.naturalHeight;
+    var scale = Math.min(1, maxSide / Math.max(w, h));
+    var cw = Math.max(1, Math.round(w * scale));
+    var ch = Math.max(1, Math.round(h * scale));
+    var canvas = document.createElement("canvas");
+    canvas.width = cw;
+    canvas.height = ch;
+    var ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, cw, ch);
+    ctx.drawImage(img, 0, 0, cw, ch);
+    return canvas.toDataURL("image/jpeg", quality);
+  }
+
+  function drawSquare(img, size, quality) {
+    var w = img.naturalWidth;
+    var h = img.naturalHeight;
+    var side = Math.min(w, h);
+    var sx = (w - side) / 2;
+    var sy = (h - side) / 2;
+    var canvas = document.createElement("canvas");
+    canvas.width = size;
+    canvas.height = size;
+    var ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, size, size);
+    ctx.drawImage(img, sx, sy, side, side, 0, 0, size, size);
+    return canvas.toDataURL("image/jpeg", quality);
+  }
+
+  function processNext(files, index, done) {
+    if (index >= files.length) { done(); return; }
+    if (formPhotos.length >= MAX_PHOTOS) {
+      showToast("Maximum of " + MAX_PHOTOS + " photos per church.");
+      done();
+      return;
+    }
+    loadImageFromFile(files[index], function (img, url) {
+      try {
+        var full = drawScaled(img, PHOTO_MAX_SIDE, 0.8);
+        var thumb = drawSquare(img, ICON_SIZE, 0.8);
+        formPhotos.push({ full: full, thumb: thumb });
+      } catch (err) {
+        showToast("One photo was too large to process.");
+      }
+      URL.revokeObjectURL(url);
+      processNext(files, index + 1, done);
+    }, function () {
+      showToast("Could not read one of the photos.");
+      processNext(files, index + 1, done);
+    });
+  }
+
+  function handlePhotoChoice() {
+    var input = byId("fPhotos");
+    var files = [];
+    for (var i = 0; i < input.files.length; i++) { files.push(input.files[i]); }
+    if (!files.length) { return; }
+    busy = true;
+    showToast("Processing photos...");
+    processNext(files, 0, function () {
+      input.value = "";
+      busy = false;
+      renderFormPhotos();
+    });
+  }
+
+  function makePhotoItem(i) {
+    var p = formPhotos[i];
+    var box = el("div", "pitem");
+    var img = document.createElement("img");
+    img.src = p.thumb;
+    img.alt = "";
+    img.addEventListener("click", function () {
+      if (i === 0) { return; }
+      var moved = formPhotos.splice(i, 1)[0];
+      formPhotos.unshift(moved);
+      renderFormPhotos();
+      showToast("Set as the icon.");
+    });
+    box.appendChild(img);
+    var x = el("button", "x", "x");
+    x.addEventListener("click", function () {
+      formPhotos.splice(i, 1);
+      renderFormPhotos();
+    });
+    box.appendChild(x);
+    if (i === 0) { box.appendChild(el("div", "badge", "Icon")); }
+    return box;
+  }
+
+  function renderFormPhotos() {
+    var grid = byId("pgrid");
+    grid.innerHTML = "";
+    for (var i = 0; i < formPhotos.length; i++) {
+      grid.appendChild(makePhotoItem(i));
+    }
+    byId("photoBtn").textContent = "Add photos (" + formPhotos.length + " of " + MAX_PHOTOS + ")";
+  }
+
+  function openViewer(src) {
+    byId("viewerImg").src = src;
+    byId("viewer").classList.remove("hidden");
+  }
+
+  function closeViewer() {
+    byId("viewer").classList.add("hidden");
+    byId("viewerImg").src = "";
   }
 
   /* ---------- Map ---------- */
@@ -297,7 +454,17 @@ html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family:
 
     sorted.forEach(function (c) {
       var item = el("div", "item");
-      item.appendChild(el("div", "thumb", "\u26EA"));
+      var thumb = el("div", "thumb");
+      var ph = photosOf(c);
+      if (ph.length) {
+        var im = document.createElement("img");
+        im.src = ph[0].thumb;
+        im.alt = "";
+        thumb.appendChild(im);
+      } else {
+        thumb.textContent = "\u26EA";
+      }
+      item.appendChild(thumb);
       var txt = el("div", "");
       txt.appendChild(el("div", "itemname", c.name));
       var sub = c.dateVisited ? "Visited " + formatDate(c.dateVisited) : "No date added";
@@ -314,6 +481,7 @@ html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family:
     removeBtn.addEventListener("click", removeSamples);
     tools.appendChild(loadBtn);
     tools.appendChild(removeBtn);
+    tools.appendChild(el("div", "version", "Version: Stage 2 (photos)"));
     list.appendChild(tools);
   }
 
@@ -353,6 +521,20 @@ html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family:
     var body = byId("detailBody");
     body.innerHTML = "";
     body.appendChild(el("h2", "", c.name));
+
+    var ph = photosOf(c);
+    if (ph.length) {
+      var strip = el("div", "strip");
+      ph.forEach(function (p) {
+        var im = document.createElement("img");
+        im.src = p.full;
+        im.alt = "";
+        im.addEventListener("click", function () { openViewer(p.full); });
+        strip.appendChild(im);
+      });
+      body.appendChild(strip);
+    }
+
     if (c.dateVisited) { body.appendChild(el("p", "", "Visited: " + formatDate(c.dateVisited))); }
     if (c.notes) { body.appendChild(el("p", "", c.notes)); }
     body.appendChild(el("p", "small", "Location: " + c.lat.toFixed(5) + ", " + c.lng.toFixed(5)));
@@ -386,6 +568,8 @@ html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family:
     byId("fName").value = church ? church.name : "";
     byId("fDate").value = church && church.dateVisited ? church.dateVisited : "";
     byId("fNotes").value = church && church.notes ? church.notes : "";
+    formPhotos = photosOf(church).slice();
+    renderFormPhotos();
     pendingLatLng = null;
     clearPickMarker();
     byId("locLabel").textContent = "No location chosen yet";
@@ -401,6 +585,7 @@ html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family:
     pickMode = false;
     clearPickMarker();
     editingId = null;
+    formPhotos = [];
     setSheet(1);
   }
 
@@ -432,6 +617,7 @@ html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family:
   }
 
   function saveForm() {
+    if (busy) { showToast("Still processing photos. Try again in a moment."); return; }
     var name = byId("fName").value.replace(/^\s+|\s+$/g, "");
     if (!name) { showToast("Please enter a name."); return; }
     if (!pendingLatLng) { showToast("Please choose a location."); return; }
@@ -440,106 +626,3 @@ html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family:
     if (editingId) {
       record = findChurch(editingId);
     } else {
-      record = { id: newId(), created: new Date().toISOString() };
-    }
-    record.name = name;
-    record.dateVisited = byId("fDate").value;
-    record.notes = byId("fNotes").value;
-    record.lat = pendingLatLng.lat;
-    record.lng = pendingLatLng.lng;
-    record.updated = new Date().toISOString();
-
-    var savedId = record.id;
-    saveMany([record], function () {
-      loadAll(function () {
-        renderAll();
-        closeForm();
-        showToast("Saved.");
-        selectChurch(savedId);
-      });
-    });
-  }
-
-  function deleteCurrent() {
-    var c = findChurch(currentId);
-    if (!c) { return; }
-    if (!window.confirm("Delete " + c.name + "? This cannot be undone.")) { return; }
-    deleteMany([c.id], function () {
-      loadAll(function () {
-        renderAll();
-        closeDetail();
-        showToast("Deleted.");
-      });
-    });
-  }
-
-  /* ---------- Samples ---------- */
-
-  function loadSamples() {
-    var now = new Date().toISOString();
-    var samples = [
-      { id: "sample-1", name: "St Paul's Cathedral, London", lat: 51.5138, lng: -0.0984, dateVisited: "2026-05-02", notes: "Sample church. Climbed the dome.", sample: true, created: now },
-      { id: "sample-2", name: "Salisbury Cathedral", lat: 51.0645, lng: -1.7976, dateVisited: "2026-06-14", notes: "Sample church. Tallest spire in the UK.", sample: true, created: now },
-      { id: "sample-3", name: "York Minster", lat: 53.9621, lng: -1.0819, dateVisited: "2026-08-23", notes: "Sample church. Beautiful stained glass.", sample: true, created: now }
-    ];
-    saveMany(samples, function () {
-      loadAll(function () {
-        renderAll();
-        fitAll();
-        showToast("Sample churches loaded.");
-      });
-    });
-  }
-
-  function removeSamples() {
-    var ids = [];
-    for (var i = 0; i < churches.length; i++) {
-      if (churches[i].sample) { ids.push(churches[i].id); }
-    }
-    if (!ids.length) { showToast("No sample churches to remove."); return; }
-    deleteMany(ids, function () {
-      loadAll(function () {
-        renderAll();
-        showToast("Sample churches removed.");
-      });
-    });
-  }
-
-  /* ---------- Start-up ---------- */
-
-  function wireButtons() {
-    byId("addBtn").addEventListener("click", function () { openForm(null); });
-    byId("cancelBtn").addEventListener("click", closeForm);
-    byId("saveBtn").addEventListener("click", saveForm);
-    byId("useLocBtn").addEventListener("click", useMyLocation);
-    byId("pickBtn").addEventListener("click", startPicking);
-    byId("pickCancel").addEventListener("click", cancelPicking);
-    byId("closeDetailBtn").addEventListener("click", closeDetail);
-    byId("deleteBtn").addEventListener("click", deleteCurrent);
-    byId("editBtn").addEventListener("click", function () {
-      var c = findChurch(currentId);
-      if (c) { openForm(c); }
-    });
-    byId("title").addEventListener("click", fitAll);
-  }
-
-  function start() {
-    initMap();
-    initSheet();
-    wireButtons();
-    openDb(function () {
-      loadAll(function () {
-        renderAll();
-        fitAll();
-        if (navigator.storage && navigator.storage.persist) {
-          navigator.storage.persist();
-        }
-      });
-    });
-  }
-
-  start();
-})();
-</script>
-</body>
-</html>
