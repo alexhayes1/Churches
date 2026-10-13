@@ -626,3 +626,106 @@ html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family:
     if (editingId) {
       record = findChurch(editingId);
     } else {
+      record = { id: newId(), created: new Date().toISOString() };
+    }
+    record.name = name;
+    record.dateVisited = byId("fDate").value;
+    record.notes = byId("fNotes").value;
+    record.lat = pendingLatLng.lat;
+    record.lng = pendingLatLng.lng;
+    record.updated = new Date().toISOString();
+
+    var savedId = record.id;
+    saveMany([record], function () {
+      loadAll(function () {
+        renderAll();
+        closeForm();
+        showToast("Saved.");
+        selectChurch(savedId);
+      });
+    });
+  }
+
+  function deleteCurrent() {
+    var c = findChurch(currentId);
+    if (!c) { return; }
+    if (!window.confirm("Delete " + c.name + "? This cannot be undone.")) { return; }
+    deleteMany([c.id], function () {
+      loadAll(function () {
+        renderAll();
+        closeDetail();
+        showToast("Deleted.");
+      });
+    });
+  }
+
+  /* ---------- Samples ---------- */
+
+  function loadSamples() {
+    var now = new Date().toISOString();
+    var samples = [
+      { id: "sample-1", name: "St Paul's Cathedral, London", lat: 51.5138, lng: -0.0984, dateVisited: "2026-05-02", notes: "Sample church. Climbed the dome.", sample: true, created: now },
+      { id: "sample-2", name: "Salisbury Cathedral", lat: 51.0645, lng: -1.7976, dateVisited: "2026-06-14", notes: "Sample church. Tallest spire in the UK.", sample: true, created: now },
+      { id: "sample-3", name: "York Minster", lat: 53.9621, lng: -1.0819, dateVisited: "2026-08-23", notes: "Sample church. Beautiful stained glass.", sample: true, created: now }
+    ];
+    saveMany(samples, function () {
+      loadAll(function () {
+        renderAll();
+        fitAll();
+        showToast("Sample churches loaded.");
+      });
+    });
+  }
+
+  function removeSamples() {
+    var ids = [];
+    for (var i = 0; i < churches.length; i++) {
+      if (churches[i].sample) { ids.push(churches[i].id); }
+    }
+    if (!ids.length) { showToast("No sample churches to remove."); return; }
+    deleteMany(ids, function () {
+      loadAll(function () {
+        renderAll();
+        showToast("Sample churches removed.");
+      });
+    });
+  }
+
+  /* ---------- Start-up ---------- */
+
+  function wireButtons() {
+    byId("addBtn").addEventListener("click", function () { openForm(null); });
+    byId("cancelBtn").addEventListener("click", closeForm);
+    byId("saveBtn").addEventListener("click", saveForm);
+    byId("useLocBtn").addEventListener("click", useMyLocation);
+    byId("pickBtn").addEventListener("click", startPicking);
+    byId("pickCancel").addEventListener("click", cancelPicking);
+    byId("closeDetailBtn").addEventListener("click", closeDetail);
+    byId("deleteBtn").addEventListener("click", deleteCurrent);
+    byId("editBtn").addEventListener("click", function () {
+      var c = findChurch(currentId);
+      if (c) { openForm(c); }
+    });
+    byId("title").addEventListener("click", fitAll);
+  }
+
+  function start() {
+    initMap();
+    initSheet();
+    wireButtons();
+    openDb(function () {
+      loadAll(function () {
+        renderAll();
+        fitAll();
+        if (navigator.storage && navigator.storage.persist) {
+          navigator.storage.persist();
+        }
+      });
+    });
+  }
+
+  start();
+})();
+</script>
+</body>
+</html>
