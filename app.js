@@ -5,9 +5,8 @@
   var CT = window.CT;
   var MAX_PHOTOS = 8;
   var REMIND_DAYS = 30;
+  var VERSION = "Version: Stage 3 (map labels)";
   var churches = [];
-  var markers = {};
-  var markerLayer = null;
   var map = null;
   var sheetState = 1;
   var pendingLatLng = null;
@@ -172,7 +171,7 @@
       attribution: "&copy; OpenStreetMap contributors"
     }).addTo(map);
     L.control.zoom({ position: "topright" }).addTo(map);
-    markerLayer = L.layerGroup().addTo(map);
+    CT.markers.init(map, function (id) { selectChurch(id); });
 
     map.on("click", function (e) {
       if (!pickMode) { return; }
@@ -181,32 +180,6 @@
       setPending(e.latlng.lat, e.latlng.lng);
       byId("formWrap").classList.remove("hidden");
     });
-  }
-
-  function pinIcon(selected) {
-    var cls = selected ? "pin-dot sel" : "pin-dot";
-    return L.divIcon({
-      className: "",
-      html: "<div class=\"" + cls + "\">\u26EA</div>",
-      iconSize: [28, 28],
-      iconAnchor: [14, 14]
-    });
-  }
-
-  function makeMarker(c) {
-    var m = L.marker([c.lat, c.lng], { icon: pinIcon(false) });
-    m.on("click", function () { selectChurch(c.id); });
-    m.addTo(markerLayer);
-    markers[c.id] = m;
-  }
-
-  function highlight(id) {
-    for (var key in markers) {
-      if (markers.hasOwnProperty(key)) {
-        markers[key].setIcon(pinIcon(key === id));
-        markers[key].setZIndexOffset(key === id ? 1000 : 0);
-      }
-    }
   }
 
   function fitAll() {
@@ -226,10 +199,7 @@
   /* ---------- Rendering ---------- */
 
   function renderAll() {
-    markerLayer.clearLayers();
-    markers = {};
-    for (var i = 0; i < churches.length; i++) { makeMarker(churches[i]); }
-    if (currentId) { highlight(currentId); }
+    CT.markers.set(churches, currentId);
     renderList();
     updateDot();
     byId("count").textContent = churches.length ? "(" + churches.length + ")" : "";
@@ -277,7 +247,7 @@
     removeBtn.addEventListener("click", removeSamples);
     tools.appendChild(loadBtn);
     tools.appendChild(removeBtn);
-    tools.appendChild(el("div", "version", CT.VERSION));
+    tools.appendChild(el("div", "version", VERSION));
     list.appendChild(tools);
   }
 
@@ -310,7 +280,7 @@
     var c = findChurch(id);
     if (!c) { return; }
     currentId = id;
-    highlight(id);
+    CT.markers.setSelected(id);
     setSheet(0);
     map.flyTo([c.lat, c.lng], Math.max(map.getZoom(), 14), { duration: 0.8 });
 
@@ -341,7 +311,7 @@
   function closeDetail() {
     byId("detail").classList.add("hidden");
     currentId = null;
-    highlight(null);
+    CT.markers.setSelected(null);
     setSheet(1);
   }
 
