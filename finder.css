@@ -1,0 +1,28 @@
+.form .searchrow { display: flex; gap: 8px; }
+.form .searchrow input[type="text"] { flex: 1 1 auto; min-width: 0; width: auto; }
+.searchbtn { flex: 0 0 auto; border: none; border-radius: 8px; padding: 0 16px; font-size: 15px; font-weight: 600; background: #2f4a3a; color: #fff; font-family: inherit; }
+.searchbtn:disabled, .actbtn:disabled { opacity: 0.5; }
+.res { display: block; width: 100%; text-align: left; background: #f4f6f4; border: none; border-radius: 10px; padding: 10px 12px; margin: 8px 0 0 0; font-family: inherit; }
+.res .rname { font-size: 15px; font-weight: 600; color: #1d1d1d; }
+.res .rsub { font-size: 12px; color: #666; margin-top: 2px; line-height: 1.3; }
+
+.infobox { margin: 14px 0 4px 0; padding: 12px; background: #f4f6f4; border-radius: 12px; }
+.infobox h3 { margin: 0 0 8px 0; font-size: 16px; }
+.irow { display: flex; gap: 10px; padding: 4px 0; font-size: 14px; line-height: 1.35; }
+.ilabel { flex: 0 0 96px; color: #777; }
+.ivalue { flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; }
+.irow a, .wiki a { color: #2f4a3a; font-weight: 600; }
+.wiki { margin-top: 8px; padding-top: 8px; border-top: 1px solid #dde3dd; font-size: 14px; line-height: 1.45; }
+.wiki a { display: inline-block; margin-top: 6px; }
+.isource { font-size: 11px; color: #888; margin-top: 10px; line-height: 1.4; }
+.statusline { font-size: 13px; color: #444; margin-top: 8px; line-height: 1.4; }
+.linkrow { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.linkbtn, .actbtn { display: inline-block; border: none; border-radius: 14px; padding: 8px 12px; font-size: 13px; font-weight: 600; background: #e3ebe3; color: #2f4a3a; text-decoration: none; font-family: inherit; }
+.actbtn.primary { background: #2f4a3a; color: #fff; }
+.preview { margin-top: 10px; padding: 10px; background: #fff; border: 2px solid #d9a400; border-radius: 12px; }
+.pnote { font-size: 13px; color: #6a4b00; margin: 0 0 8px 0; line-height: 1.4; }
+.checkout { font-size: 13px; line-height: 1.7; margin-top: 8px; }
+.ok { color: #1b6b3a; }
+.bad { color: #8a1c2b; }
+
+/* END OF finder.css */
