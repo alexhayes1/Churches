@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <link rel="stylesheet" href="style.css?v=5">
 <link rel="stylesheet" href="markers.css?v=6">
+<link rel="stylesheet" href="finder.css?v=7">
 </head>
 <body>
 
@@ -46,6 +47,14 @@
 <div id="formWrap" class="overlay hidden">
   <div class="form">
     <h2 id="formTitle">Add a church</h2>
+    <label for="fSearch">Search for a church (optional)</label>
+    <div class="searchrow">
+      <input id="fSearch" type="text" placeholder="e.g. St Mary's, Totnes" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="search">
+      <button id="searchBtn" class="searchbtn" type="button">Search</button>
+    </div>
+    <div id="searchStatus" class="hint"></div>
+    <div id="searchResults"></div>
+    <div id="infoNote" class="hint"></div>
     <label for="fName">Name</label>
     <input id="fName" type="text" placeholder="e.g. St Mary's, Totnes" autocomplete="off">
     <label for="fDate">Date visited</label>
@@ -82,8 +91,10 @@
     <div class="stack">
       <button id="backupBtn" class="bigbtn save">Back up now</button>
       <button id="restoreBtn" class="bigbtn">Restore from a backup file</button>
+      <button id="checkBtn" class="bigbtn">Check online services</button>
       <button id="dataClose" class="bigbtn">Close</button>
     </div>
+    <div id="checkOut" class="checkout"></div>
     <input id="fRestore" type="file" accept=".json,application/json" class="hidden">
     <p class="hint">When the share sheet opens, choose Save to Files, then pick iCloud Drive. Restoring never deletes anything: it adds the churches in the file and updates any that already exist.</p>
   </div>
@@ -99,6 +110,8 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="data.js?v=5"></script>
 <script src="markers.js?v=6"></script>
-<script src="app.js?v=6"></script>
+<script src="lookup.js?v=7"></script>
+<script src="finder.js?v=7"></script>
+<script src="app.js?v=7"></script>
 </body>
 </html>
