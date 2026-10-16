@@ -5,8 +5,9 @@
   var CT = window.CT;
   var MAX_PHOTOS = 8;
   var REMIND_DAYS = 30;
-  var VERSION = "Version: Stage 3 (map labels)";
+  var VERSION = "Version: Stage 4 (search and details)";
   var churches = [];
+  var pendingInfo = null;
   var map = null;
   var sheetState = 1;
   var pendingLatLng = null;
@@ -305,6 +306,7 @@
     if (c.notes) { body.appendChild(el("p", "", c.notes)); }
     body.appendChild(el("p", "small", "Location: " + c.lat.toFixed(5) + ", " + c.lng.toFixed(5)));
     if (c.sample) { body.appendChild(el("p", "small", "This is a sample church for testing.")); }
+    CT.finder.renderDetails(body, c);
     byId("detail").classList.remove("hidden");
   }
 
@@ -336,6 +338,8 @@
     byId("fNotes").value = church && church.notes ? church.notes : "";
     formPhotos = photosOf(church).slice();
     renderFormPhotos();
+    pendingInfo = (church && church.info) ? church.info : null;
+    CT.finder.resetSearch(pendingInfo);
     pendingLatLng = null;
     clearPickMarker();
     byId("locLabel").textContent = "No location chosen yet";
@@ -352,6 +356,7 @@
     clearPickMarker();
     editingId = null;
     formPhotos = [];
+    pendingInfo = null;
     setSheet(1);
   }
 
@@ -400,6 +405,7 @@
     record.lat = pendingLatLng.lat;
     record.lng = pendingLatLng.lng;
     record.photos = formPhotos.slice();
+    if (pendingInfo) { record.info = pendingInfo; } else { delete record.info; }
     record.updated = new Date().toISOString();
 
     var savedId = record.id;
@@ -525,6 +531,30 @@
     };
     reader.readAsText(file);
   }
+
+  /* ---------- Hooks used by finder.js ---------- */
+
+  CT.hooks = {
+    setPlace: function (lat, lng) {
+      setPending(lat, lng);
+      map.setView([lat, lng], 16);
+    },
+    setInfo: function (info) { pendingInfo = info; },
+    saveInfo: function (id, info, cb) {
+      var c = findChurch(id);
+      if (!c) { cb(false); return; }
+      c.info = info;
+      c.updated = new Date().toISOString();
+      CT.saveMany([c], function () {
+        reload(function () {
+          renderAll();
+          selectChurch(id);
+          cb(true);
+        });
+      });
+    },
+    toast: showToast
+  };
 
   /* ---------- Start-up ---------- */
 
