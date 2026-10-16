@@ -9,6 +9,16 @@
   var SEARCH_GAP_MS = 1100;
   var lastSearchAt = 0;
   var searchCache = {};
+  var lastNomAt = 0;
+
+  /* Every Nominatim call waits so that calls are at least 1.1 seconds apart. */
+  function nominatimGet(url, cb) {
+    var wait = Math.max(0, SEARCH_GAP_MS - (Date.now() - lastNomAt));
+    setTimeout(function () {
+      lastNomAt = Date.now();
+      request(url, null, 15000, cb);
+    }, wait);
+  }
 
   /* ---------- Small helpers ---------- */
 
@@ -180,6 +190,23 @@
     return out;
   };
 
+  function tidyResults(all) {
+    var churchy = all.filter(function (p) { return p.isChurch; });
+    var loose = churchy.length === 0;
+    var pool = loose ? all.slice(0, 5) : churchy;
+    var kept = [];
+    for (var i = 0; i < pool.length; i++) {
+      var dup = false;
+      for (var j = 0; j < kept.length; j++) {
+        if (kept[j].name.toLowerCase() === pool[i].name.toLowerCase() &&
+            distanceM(kept[j].lat, kept[j].lng, pool[i].lat, pool[i].lng) < 80) { dup = true; break; }
+      }
+      if (!dup) { kept.push(pool[i]); }
+      if (kept.length >= 8) { break; }
+    }
+    return { places: kept, loose: loose };
+  }
+
   CT.lookup.search = function (text, cb) {
     var q = trim(text);
     if (q.length < 3) { cb("short"); return; }
@@ -189,35 +216,39 @@
     if (now - lastSearchAt < SEARCH_GAP_MS) { cb("busy"); return; }
     lastSearchAt = now;
 
-    var query = /(church|chapel|cathedral|abbey|minster|priory|kirk|basilica|friary|temple)/i.test(q) ? q : q + " church";
-    var url = NOMINATIM + "search?format=jsonv2&addressdetails=1&extratags=1&countrycodes=gb&limit=15&accept-language=en-GB&q=" + encodeURIComponent(query);
+    /* First try the text exactly as typed, then once more with the word church added. */
+    var attempts = [q];
+    if (!/(church|chapel|cathedral|abbey|minster|priory|kirk|basilica|friary|temple)/i.test(q)) {
+      attempts.push(q.replace(/,/g, " ") + " church");
+    }
+    var firstAll = null;
 
-    request(url, null, 15000, function (err, data) {
-      if (err || !Array.isArray(data)) { cb("network"); return; }
-      var all = [];
-      var i;
-      for (i = 0; i < data.length; i++) {
-        var p = placeFromResult(data[i]);
-        if (p) { all.push(p); }
-      }
-      var churchy = all.filter(function (p) { return p.isChurch; });
-      var loose = churchy.length === 0;
-      var pool = loose ? all.slice(0, 5) : churchy;
-
-      var kept = [];
-      for (i = 0; i < pool.length; i++) {
-        var dup = false;
-        for (var j = 0; j < kept.length; j++) {
-          if (kept[j].name.toLowerCase() === pool[i].name.toLowerCase() &&
-              distanceM(kept[j].lat, kept[j].lng, pool[i].lat, pool[i].lng) < 80) { dup = true; break; }
+    function run(i) {
+      var url = NOMINATIM + "search?format=jsonv2&addressdetails=1&extratags=1&countrycodes=gb&limit=15&accept-language=en-GB&q=" + encodeURIComponent(attempts[i]);
+      nominatimGet(url, function (err, data) {
+        if (err || !Array.isArray(data)) {
+          if (firstAll) { finish(firstAll); } else { cb("network"); }
+          return;
         }
-        if (!dup) { kept.push(pool[i]); }
-        if (kept.length >= 8) { break; }
-      }
-      var result = { places: kept, loose: loose };
+        var all = [];
+        for (var n = 0; n < data.length; n++) {
+          var p = placeFromResult(data[n]);
+          if (p) { all.push(p); }
+        }
+        if (all.length && !firstAll) { firstAll = all; }
+        var hasChurch = all.some(function (p) { return p.isChurch; });
+        if (hasChurch || i + 1 >= attempts.length) { finish(hasChurch ? all : (firstAll || all)); return; }
+        run(i + 1);
+      });
+    }
+
+    function finish(all) {
+      var result = tidyResults(all);
       searchCache[key] = result;
       cb(null, result);
-    });
+    }
+
+    run(0);
   };
 
   /* ---------- Details for a church that is already on the map ---------- */
@@ -262,9 +293,51 @@
     attempt(0);
   }
 
+  function pickBestPlace(places, lat, lng, name) {
+    var best = null;
+    var bestScore = -1;
+    for (var i = 0; i < places.length; i++) {
+      var p = places[i];
+      var d = distanceM(lat, lng, p.lat, p.lng);
+      var score = similarity(name, p.name) + Math.max(0, 1 - d / 150) * 0.6;
+      if (score > bestScore) { bestScore = score; best = { info: p.info, distance: d }; }
+    }
+    return best;
+  }
+
+  /* Looks for churches inside a small box (about 200 m) around the pin using Nominatim. */
+  function nominatimNearby(lat, lng, name, cb) {
+    var dy = 0.0018;
+    var dx = 0.0018 / Math.max(0.2, Math.cos(lat * Math.PI / 180));
+    var box = [(lng - dx).toFixed(6), (lat + dy).toFixed(6), (lng + dx).toFixed(6), (lat - dy).toFixed(6)].join(",");
+    var terms = ["church", "place of worship"];
+    function attempt(i) {
+      if (i >= terms.length) { cb(null, null); return; }
+      var url = NOMINATIM + "search?format=jsonv2&addressdetails=1&extratags=1&limit=20&bounded=1&accept-language=en-GB&viewbox=" + box + "&q=" + encodeURIComponent(terms[i]);
+      nominatimGet(url, function (err, data) {
+        if (err || !Array.isArray(data)) { cb(err || "bad reply"); return; }
+        var places = [];
+        for (var n = 0; n < data.length; n++) {
+          var p = placeFromResult(data[n]);
+          if (p && p.isChurch) { places.push(p); }
+        }
+        if (!places.length) { attempt(i + 1); return; }
+        cb(null, pickBestPlace(places, lat, lng, name));
+      });
+    }
+    attempt(0);
+  }
+
+  function nearbyChurch(lat, lng, name, cb) {
+    nominatimNearby(lat, lng, name, function (err, hit) {
+      if (!err) { cb(null, hit); return; }
+      overpassNearby(lat, lng, name, cb);
+    });
+  }
+
   function nominatimReverse(lat, lng, cb) {
     var url = NOMINATIM + "reverse?format=jsonv2&addressdetails=1&extratags=1&zoom=18&accept-language=en-GB&lat=" + lat.toFixed(6) + "&lon=" + lng.toFixed(6);
-    request(url, null, 12000, function (err, r) {
+    nominatimGet(url, function (err, r) {
       if (err) { cb(err); return; }
       var p = (r && !r.error) ? placeFromResult(r) : null;
       cb(null, (p && p.isChurch) ? p : null);
@@ -356,7 +429,7 @@
       return;
     }
 
-    overpassNearby(church.lat, church.lng, church.name, function (err, hit) {
+    nearbyChurch(church.lat, church.lng, church.name, function (err, hit) {
       if (hit) {
         out.osmFound = true;
         out.matched = hit.info.officialName || "";
