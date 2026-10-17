@@ -25,4 +25,9 @@
 .ok { color: #1b6b3a; }
 .bad { color: #8a1c2b; }
 
+/* Church card: details scroll, the Edit / Delete / Close buttons stay in view */
+.card { display: flex; flex-direction: column; overflow: hidden; max-height: 78%; }
+.card #detailBody { flex: 1 1 auto; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.card .btnrow { flex: 0 0 auto; }
+
 /* END OF finder.css */
