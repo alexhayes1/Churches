@@ -306,7 +306,12 @@
     if (c.notes) { body.appendChild(el("p", "", c.notes)); }
     body.appendChild(el("p", "small", "Location: " + c.lat.toFixed(5) + ", " + c.lng.toFixed(5)));
     if (c.sample) { body.appendChild(el("p", "small", "This is a sample church for testing.")); }
-    CT.finder.renderDetails(body, c);
+    if (CT.finder) {
+      try { CT.finder.renderDetails(body, c); }
+      catch (err) { body.appendChild(el("p", "small", "Details could not be shown: " + (err && err.message ? err.message : err))); }
+    } else {
+      body.appendChild(el("p", "small", "The details feature did not load. Check that finder.js was pasted in full (its last line is /* END OF finder.js */)."));
+    }
     byId("detail").classList.remove("hidden");
   }
 
@@ -339,7 +344,7 @@
     formPhotos = photosOf(church).slice();
     renderFormPhotos();
     pendingInfo = (church && church.info) ? church.info : null;
-    CT.finder.resetSearch(pendingInfo);
+    if (CT.finder) { CT.finder.resetSearch(pendingInfo); }
     pendingLatLng = null;
     clearPickMarker();
     byId("locLabel").textContent = "No location chosen yet";
